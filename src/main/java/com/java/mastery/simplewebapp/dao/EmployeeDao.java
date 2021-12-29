@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface EmployeeDao {
 
-    Employee save(Employee employee);
+    Employee create(Employee employee);
 
     Employee findById(Long id);
 

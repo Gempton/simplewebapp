@@ -1,9 +1,9 @@
 package com.java.mastery.simplewebapp.service.impl;
 
-import com.java.mastery.simplewebapp.dao.impl.DepartmentDaoImpl;
-import com.java.mastery.simplewebapp.dao.impl.EmployeeDaoImpl;
-import com.java.mastery.simplewebapp.exception.department.NoSuchDepartmentException;
-import com.java.mastery.simplewebapp.exception.employee.NoSuchEmployeeException;
+import com.java.mastery.simplewebapp.dao.DepartmentDao;
+import com.java.mastery.simplewebapp.dao.EmployeeDao;
+import com.java.mastery.simplewebapp.exception.DepartmentNotFoundException;
+import com.java.mastery.simplewebapp.exception.EmployeeNotFoundException;
 import com.java.mastery.simplewebapp.model.Department;
 import com.java.mastery.simplewebapp.model.Employee;
 import com.java.mastery.simplewebapp.service.EmployeeService;
@@ -16,26 +16,26 @@ import java.util.List;
 public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
-    private EmployeeDaoImpl employeeDao;
+    private EmployeeDao employeeDao;
 
     @Autowired
-    private DepartmentDaoImpl departmentDao;
+    private DepartmentDao departmentDao;
 
     @Override
-    public Employee save(Employee employee) {
+    public Employee create(Employee employee) {
         Department department = departmentDao.findById(employee.getDepartmentId());
         if (department == null) {
-            throw new NoSuchDepartmentException("There is no Department with ID = "  + employee.getDepartmentId());
+            throw new DepartmentNotFoundException(employee.getDepartmentId());
         }
 
-        return employeeDao.save(employee);
+        return employeeDao.create(employee);
     }
 
     @Override
     public Employee update(Employee employee) {
         Department department = departmentDao.findById(employee.getDepartmentId());
         if (department == null) {
-            throw new NoSuchDepartmentException("There is no Department with ID = "  + employee.getDepartmentId());
+            throw new DepartmentNotFoundException(employee.getDepartmentId());
         }
 
         return employeeDao.update(employee);
@@ -46,7 +46,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeDao.findById(id);
 
         if (employee == null) {
-            throw new NoSuchEmployeeException("There is no Employee with ID = " + id);
+            throw new EmployeeNotFoundException(id);
         }
 
         return employee;

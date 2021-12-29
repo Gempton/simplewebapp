@@ -2,47 +2,61 @@ package com.java.mastery.simplewebapp.dao.impl;
 
 import com.java.mastery.simplewebapp.dao.EmployeeDao;
 import com.java.mastery.simplewebapp.dao.mapper.EmployeeRowMapper;
-import com.java.mastery.simplewebapp.dao.mapper.EmployeeToMap;
+import com.java.mastery.simplewebapp.dao.mapper.EmployeeMapper;
 import com.java.mastery.simplewebapp.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 public class EmployeeDaoImpl implements EmployeeDao {
+    private static final String SQL_EMPLOYEE_ID = "employee_id";
+    private static final String EMPLOYEE_ID = "id";
+    private static final String SQL_INSERT_QUERY = "INSERT INTO employee " +
+            "(FIRST_NAME, LAST_NAME, JOB_TITLE, GENDER, DATE_OF_BIRTH, DEPARTMENT_ID)" +
+            "VALUES (:firstName, :lastName, :jobTitle, :gender, :dateOfBirth, :departmentId)";
+    private static final String SQL_SELECT_QUERY_BY_ID = "SELECT * FROM employee WHERE employee_id=:id";
+    private static final String SQL_UPDATE_QUERY = "UPDATE employee SET first_name=:firstName, last_name=:lastName, job_title=:jobTitle, gender=:gender, date_of_birth=:dateOfBirth, department_id=:departmentId WHERE employee_id=:id";
+    private static final String SQL_DELETE_QUERY = "DELETE FROM employee WHERE employee_id=:id";
+    private static final String SQL_SELECT_ALL_QUERY = "SELECT * FROM employee";
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    private EmployeeToMap employeeToMap;
+    private EmployeeMapper employeeMapper;
 
     @Override
-    public Employee save(Employee employee) {
-        Number id = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("employee")
-                .usingColumns("first_name", "last_name", "job_title", "gender", "date_of_birth", "department_id")
-                .usingGeneratedKeyColumns("employee_id")
-                .executeAndReturnKey(employeeToMap.toMap(employee));
+    public Employee create(Employee employee) {
+        KeyHolder holder = new GeneratedKeyHolder();
 
-        System.out.println(id);
+        namedParameterJdbcTemplate.update(
+                SQL_INSERT_QUERY,
+                employeeMapper.employeeToMap(employee),
+                holder);
 
+        employee.setId(Long.parseLong(holder.getKeys().get(SQL_EMPLOYEE_ID).toString()));
         return employee;
     }
 
     @Override
     public Employee findById(Long id) {
+        SqlParameterSource parameterSource = new MapSqlParameterSource(EMPLOYEE_ID, id);
         Employee employee;
 
         try {
-            employee = jdbcTemplate.queryForObject("SELECT * FROM employee WHERE employee_id=?",
-                    new EmployeeRowMapper(), id);
-        } catch (EmptyResultDataAccessException e) {
+            employee = namedParameterJdbcTemplate.queryForObject(
+                    SQL_SELECT_QUERY_BY_ID,
+                    parameterSource,
+                    new EmployeeRowMapper());
+        } catch (DataAccessException e) {
             return null;
         }
 
@@ -51,21 +65,20 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
     @Override
     public Employee update(Employee employee) {
-        jdbcTemplate.update("UPDATE employee SET first_name=?, last_name=?, job_title=?, gender=?, date_of_birth=?, department_id=? WHERE employee_id=?",
-                employee.getFirstName(), employee.getLastName(), employee.getJobTitle(), employee.getGender().name(),
-                employee.getDateOfBirth(), employee.getDepartmentId(), employee.getEmployeeId());
+        namedParameterJdbcTemplate.update(SQL_UPDATE_QUERY, employeeMapper.employeeToMap(employee));
 
-        return findById(employee.getEmployeeId());
+        return findById(employee.getId());
     }
 
     @Override
     public int deleteById(Long id) {
-        return jdbcTemplate.update("DELETE FROM employee WHERE employee_id=?", id);
+        SqlParameterSource parameterSource = new MapSqlParameterSource(EMPLOYEE_ID, id);
+
+        return namedParameterJdbcTemplate.update(SQL_DELETE_QUERY, parameterSource);
     }
 
     @Override
     public List<Employee> findAll() {
-        return jdbcTemplate.query("SELECT * FROM employee",
-                new EmployeeRowMapper());
+        return namedParameterJdbcTemplate.query(SQL_SELECT_ALL_QUERY, new EmployeeRowMapper());
     }
 }

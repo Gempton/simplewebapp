@@ -2,11 +2,12 @@ package com.java.mastery.simplewebapp.rest;
 
 import com.java.mastery.simplewebapp.dto.EmployeeDto;
 import com.java.mastery.simplewebapp.model.Employee;
-import com.java.mastery.simplewebapp.rest.mapper.EmployeeMapper;
-import com.java.mastery.simplewebapp.service.impl.EmployeeServiceImpl;
+import com.java.mastery.simplewebapp.rest.mapper.impl.EmployeeMapperImpl;
+import com.java.mastery.simplewebapp.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,15 +15,15 @@ import java.util.stream.Collectors;
 public class EmployeeController {
 
     @Autowired
-    private EmployeeServiceImpl employeeService;
+    private EmployeeService employeeService;
 
     @Autowired
-    private EmployeeMapper employeeMapper;
+    private EmployeeMapperImpl employeeMapper;
 
     @PostMapping("/employee")
-    public EmployeeDto add(@RequestBody EmployeeDto employeeDto) {
+    public EmployeeDto add(@RequestBody @Valid EmployeeDto employeeDto) {
         Employee employee = employeeMapper.mapToEmployee(employeeDto);
-        Employee newEmployee = employeeService.save(employee);
+        Employee newEmployee = employeeService.create(employee);
         return employeeMapper.mapToEmployeeDto(newEmployee);
     }
 
@@ -33,15 +34,16 @@ public class EmployeeController {
     }
 
     @PutMapping("/employee/{id}")
-    public EmployeeDto update(@PathVariable Long id, @RequestBody EmployeeDto employeeDto) {
+    public EmployeeDto update(@PathVariable Long id, @RequestBody @Valid EmployeeDto employeeDto) {
         Employee newEmployee = employeeMapper.mapToEmployee(employeeDto);
-        newEmployee.setEmployeeId(id);
+        newEmployee.setId(id);
         employeeService.update(newEmployee);
         return employeeMapper.mapToEmployeeDto(newEmployee);
     }
 
     @DeleteMapping("/employee/{id}")
     public Long delete(@PathVariable Long id) {
+        employeeService.findById(id);
         employeeService.deleteById(id);
         return id;
     }

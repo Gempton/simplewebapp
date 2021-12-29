@@ -6,10 +6,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Department {
-    private Long departmentId;
+    private Long id;
     private String name;
-
-    public Department(Long departmentId) {
-        this.departmentId = departmentId;
-    }
 }
