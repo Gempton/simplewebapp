@@ -12,7 +12,7 @@ public interface EmployeeService {
 
     Employee update(Employee employee);
 
-    int deleteById(Long id);
+    void deleteById(Long id);
 
     List<Employee> findAll();
 }

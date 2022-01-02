@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class EmployeeDaoImpl implements EmployeeDao {
@@ -24,7 +25,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
             "VALUES (:firstName, :lastName, :jobTitle, :gender, :dateOfBirth, :departmentId)";
     private static final String SQL_SELECT_QUERY_BY_ID = "SELECT * FROM employee WHERE employee_id=:id";
     private static final String SQL_UPDATE_QUERY = "UPDATE employee SET first_name=:firstName, last_name=:lastName, job_title=:jobTitle, gender=:gender, date_of_birth=:dateOfBirth, department_id=:departmentId WHERE employee_id=:id";
-    private static final String SQL_DELETE_QUERY = "DELETE FROM employee WHERE employee_id=:id";
+    private static final String SQL_DELETE_QUERY_BY_ID = "DELETE FROM employee WHERE employee_id=:id";
     private static final String SQL_SELECT_ALL_QUERY = "SELECT * FROM employee";
 
     @Autowired
@@ -32,6 +33,9 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
     @Autowired
     private EmployeeMapper employeeMapper;
+
+    @Autowired
+    private EmployeeRowMapper employeeRowMapper;
 
     @Override
     public Employee create(Employee employee) {
@@ -42,7 +46,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
                 employeeMapper.employeeToMap(employee),
                 holder);
 
-        employee.setId(Long.parseLong(holder.getKeys().get(SQL_EMPLOYEE_ID).toString()));
+        employee.setId(Long.valueOf((Objects.requireNonNull(holder.getKeys()).get(SQL_EMPLOYEE_ID)).toString()));
         return employee;
     }
 
@@ -55,7 +59,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
             employee = namedParameterJdbcTemplate.queryForObject(
                     SQL_SELECT_QUERY_BY_ID,
                     parameterSource,
-                    new EmployeeRowMapper());
+                    employeeRowMapper);
         } catch (DataAccessException e) {
             return null;
         }
@@ -71,14 +75,14 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public int deleteById(Long id) {
+    public void deleteById(Long id) {
         SqlParameterSource parameterSource = new MapSqlParameterSource(EMPLOYEE_ID, id);
 
-        return namedParameterJdbcTemplate.update(SQL_DELETE_QUERY, parameterSource);
+        namedParameterJdbcTemplate.update(SQL_DELETE_QUERY_BY_ID, parameterSource);
     }
 
     @Override
     public List<Employee> findAll() {
-        return namedParameterJdbcTemplate.query(SQL_SELECT_ALL_QUERY, new EmployeeRowMapper());
+        return namedParameterJdbcTemplate.query(SQL_SELECT_ALL_QUERY, employeeRowMapper);
     }
 }

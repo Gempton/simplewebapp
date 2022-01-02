@@ -5,13 +5,10 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class EmployeeNotFoundException extends RuntimeException{
+public class EmployeeNotFoundException extends AppException{
     private static final String ERROR_MESSAGE = "error.employee_not_found";
 
-    private Long id;
-
-    public EmployeeNotFoundException(Long id) {
-        super(ERROR_MESSAGE);
-        this.id = id;
+    public EmployeeNotFoundException(Object data) {
+        super(ERROR_MESSAGE, data);
     }
 }

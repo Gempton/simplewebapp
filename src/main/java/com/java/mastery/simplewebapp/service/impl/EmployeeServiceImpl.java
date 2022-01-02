@@ -53,8 +53,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public int deleteById(Long id) {
-        return employeeDao.deleteById(id);
+    public void deleteById(Long id) {
+        employeeDao.deleteById(id);
     }
 
     @Override

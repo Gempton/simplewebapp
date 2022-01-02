@@ -5,13 +5,10 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class DepartmentNotFoundException extends RuntimeException{
+public class DepartmentNotFoundException extends AppException {
     private static final String ERROR_MESSAGE = "error.department_not_found";
 
-    private Long id;
-
-    public DepartmentNotFoundException(Long id) {
-        super(ERROR_MESSAGE);
-        this.id = id;
+    public DepartmentNotFoundException(Object data) {
+        super(ERROR_MESSAGE, data);
     }
 }

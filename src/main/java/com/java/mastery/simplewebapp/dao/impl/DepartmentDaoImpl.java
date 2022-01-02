@@ -18,6 +18,9 @@ public class DepartmentDaoImpl implements DepartmentDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    @Autowired
+    private DepartmentRowMapper departmentRowMapper;
+
     @Override
     public Department findById(Long id) {
         SqlParameterSource parameterSource = new MapSqlParameterSource(DEPARTMENT_ID, id);
@@ -27,7 +30,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
             department = namedParameterJdbcTemplate.queryForObject(
                     SQL_SELECT_BY_ID_QUERY,
                     parameterSource,
-                    new DepartmentRowMapper());
+                    departmentRowMapper);
         } catch (DataAccessException e) {
             return null;
         }

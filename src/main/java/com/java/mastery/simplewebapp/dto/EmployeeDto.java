@@ -5,8 +5,8 @@ import com.java.mastery.simplewebapp.model.enums.Gender;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Data
@@ -27,7 +27,9 @@ public class EmployeeDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
+    @NotNull
     private Gender gender;
 
+    @NotNull
     private Long departmentId;
 }

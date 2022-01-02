@@ -1,7 +1,6 @@
 package com.java.mastery.simplewebapp.exception.handler;
 
-import com.java.mastery.simplewebapp.exception.DepartmentNotFoundException;
-import com.java.mastery.simplewebapp.exception.EmployeeNotFoundException;
+import com.java.mastery.simplewebapp.exception.AppException;
 import com.java.mastery.simplewebapp.exception.ErrorData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,22 +11,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-    @ExceptionHandler
-    public ResponseEntity<ErrorData> handleException(EmployeeNotFoundException exception) {
-        ErrorData data = new ErrorData();
-        data.setData(exception.getId());
-        data.setMessage(exception.getMessage());
-        log.error("employee not found, id = {}", exception.getId());
-
-        return new ResponseEntity<>(data, HttpStatus.NOT_FOUND);
-    }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorData> handleException(DepartmentNotFoundException exception) {
+    public ResponseEntity<ErrorData> handleException(AppException exception) {
         ErrorData data = new ErrorData();
-        data.setData(exception.getId());
+        data.setData(exception.getData());
         data.setMessage(exception.getMessage());
-        log.error("department not found, id = {}", exception.getId());
+        log.error("exception, id = {}", exception.getData());
 
         return new ResponseEntity<>(data, HttpStatus.NOT_FOUND);
     }
@@ -37,7 +27,7 @@ public class GlobalExceptionHandler {
         ErrorData data = new ErrorData();
 
         data.setMessage(exception.getMessage());
-//        data.setData();
+        log.error("Exception: " + data.getMessage());
 
         return new ResponseEntity<>(data, HttpStatus.BAD_REQUEST);
     }
