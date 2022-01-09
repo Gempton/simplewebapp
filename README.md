@@ -48,3 +48,15 @@ mvn test
 ## Additional information
 SWAGGER URL <br />
 http://localhost:8080/swagger-ui.html
+
+### Body for request
+```
+{
+    "firstName": "Petr",
+    "lastName": "Ivanov",
+    "jobTitle": "programmer",
+    "dateOfBirth": "1999-10-03",
+    "gender": "MALE",
+    "departmentId": 1
+}
+```
