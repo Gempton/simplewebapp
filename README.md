@@ -27,7 +27,7 @@ cd ../simplewebapp
 mvn install
 mvn clean package
 ```
-Then you should open file application.properties and change line
+Then you should open file application.properties and change line <br />
 From
 ```
 spring.datasource.initialization-mode=always
@@ -46,5 +46,5 @@ mvn test
 ```
 
 ## Additional information
-
-
+SWAGGER URL <br />
+http://localhost:8080/swagger-ui.html
