@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<ErrorData> handleException(AppException exception) {
+    public ResponseEntity<ErrorData> handleAppException(AppException exception) {
         ErrorData data = new ErrorData();
         data.setData(exception.getData());
         data.setMessage(exception.getMessage());
-        log.error("exception, id = {}", exception.getData());
+        log.error("message = {}, data = {}", exception.getMessage(), exception.getData());
 
         return new ResponseEntity<>(data, HttpStatus.NOT_FOUND);
     }

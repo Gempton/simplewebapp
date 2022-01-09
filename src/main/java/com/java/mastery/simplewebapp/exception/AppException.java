@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-public class AppException extends RuntimeException{
+public class AppException extends RuntimeException {
     private Object data;
 
     public AppException(String message, Object data) {

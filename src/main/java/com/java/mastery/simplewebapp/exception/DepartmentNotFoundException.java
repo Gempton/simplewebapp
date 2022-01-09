@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 public class DepartmentNotFoundException extends AppException {
     private static final String ERROR_MESSAGE = "error.department_not_found";
 
-    public DepartmentNotFoundException(Object data) {
-        super(ERROR_MESSAGE, data);
+    public DepartmentNotFoundException(Long id) {
+        super(ERROR_MESSAGE, id);
     }
 }

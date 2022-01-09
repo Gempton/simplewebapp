@@ -45,7 +45,7 @@ public class EmployeeController {
 
     @DeleteMapping("{id}")
     public void delete(@PathVariable Long id) {
-        employeeService.findById(id); // Check
+        employeeService.findById(id); // Check employee existance
         employeeService.deleteById(id);
     }
 
