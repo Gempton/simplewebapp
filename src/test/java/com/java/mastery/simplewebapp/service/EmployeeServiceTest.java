@@ -72,20 +72,20 @@ public class EmployeeServiceTest {
         when(employeeDao.create(employeeTest)).thenReturn(employeeTest);
         when(departmentDao.findById(employeeTest.getDepartmentId())).thenReturn(new Department());
 
-        employeeServiceImpl.create(employeeTest);
+        Employee receivedEmployee = employeeServiceImpl.create(employeeTest);
 
         verify(employeeDao, times(1)).create(employeeTest);
+        assertEquals(receivedEmployee, employeeTest);
     }
 
     @Test
     public void createEmployeeShouldThrowDepartmentNotFoundException() {
-        when(departmentDao.findById(employeeTest.getDepartmentId())).thenThrow(new DepartmentNotFoundException(employeeTest.getDepartmentId()));
-
         DepartmentNotFoundException thrown = assertThrows(DepartmentNotFoundException.class, () -> {
             employeeServiceImpl.create(employeeTest);
         });
 
         assertEquals(DEPARTMENT_NOT_FOUND_ERROR, thrown.getMessage());
+        assertEquals(employeeTest.getDepartmentId(), thrown.getData());
     }
 
     @Test
@@ -94,47 +94,27 @@ public class EmployeeServiceTest {
 
         Employee receivedEmployee = employeeServiceImpl.findById(1L);
 
-        assertNotNull(employeeTest);
-        assertEquals("Ilya", receivedEmployee.getFirstName());
-        assertEquals("Petrov", receivedEmployee.getLastName());
-        assertEquals("Programmer", receivedEmployee.getJobTitle());
-        assertEquals(LocalDate.of(2004, 11, 14), receivedEmployee.getDateOfBirth());
-        assertEquals(Gender.MALE, receivedEmployee.getGender());
-        assertEquals(3L, receivedEmployee.getDepartmentId());
+        assertEquals(receivedEmployee, employeeTest);
     }
 
     @Test
     public void findByIdShouldThrowEmployeeNotFoundException() {
-        when(employeeDao.findById(10L)).thenThrow(new EmployeeNotFoundException(10L));
-
         EmployeeNotFoundException thrown = assertThrows(EmployeeNotFoundException.class, () -> {
             employeeServiceImpl.findById(10L);
         });
 
         assertEquals(EMPLOYEE_NOT_FOUND_ERROR, thrown.getMessage());
+        assertEquals(10L, thrown.getData());
     }
 
     @Test
     public void updateEmployeeShouldThrowDepartmentNotFoundException() {
-        when(departmentDao.findById(employeeTest.getDepartmentId())).thenReturn(null);
-
         DepartmentNotFoundException thrown = assertThrows(DepartmentNotFoundException.class, () -> {
             employeeServiceImpl.update(employeeTest);
         });
 
         assertEquals(DEPARTMENT_NOT_FOUND_ERROR, thrown.getMessage());
-    }
-
-    @Test
-    public void updateEmployeeShouldThrowEmployeeNotFoundException() {
-        when(employeeDao.update(employeeTest)).thenThrow(new EmployeeNotFoundException(employeeTest.getId()));
-        when(departmentDao.findById(employeeTest.getDepartmentId())).thenReturn(new Department());
-
-        EmployeeNotFoundException thrown = assertThrows(EmployeeNotFoundException.class, () -> {
-            employeeServiceImpl.update(employeeTest);
-        });
-
-        assertEquals(EMPLOYEE_NOT_FOUND_ERROR, thrown.getMessage());
+        assertEquals(employeeTest.getDepartmentId(), thrown.getData());
     }
 
     @Test
@@ -144,13 +124,7 @@ public class EmployeeServiceTest {
 
         Employee receivedEmployee = employeeServiceImpl.update(employeeTest);
 
-        assertNotNull(employeeUpdated);
-        assertEquals(employeeUpdated.getFirstName(), receivedEmployee.getFirstName());
-        assertEquals(employeeUpdated.getLastName(), receivedEmployee.getLastName());
-        assertEquals(employeeUpdated.getJobTitle(), receivedEmployee.getJobTitle());
-        assertEquals(employeeUpdated.getDateOfBirth(), receivedEmployee.getDateOfBirth());
-        assertEquals(employeeUpdated.getGender(), receivedEmployee.getGender());
-        assertEquals(employeeUpdated.getDepartmentId(), receivedEmployee.getDepartmentId());
+        assertEquals(employeeUpdated, receivedEmployee);
     }
 
     @Test
